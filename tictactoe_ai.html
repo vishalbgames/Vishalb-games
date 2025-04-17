@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe vs AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body { font-family: sans-serif; text-align: center; }
+    table { margin: 20px auto; }
+    td {
+      width: 80px; height: 80px; font-size: 36px;
+      border: 2px solid #000; cursor: pointer; text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>Play vs AI</h2>
+  <table id="board"></table>
+  <p id="status"></p>
+  <script>
+    const boardElem = document.getElementById("board");
+    const statusElem = document.getElementById("status");
+    let board = ["", "", "", "", "", "", "", "", ""];
+
+    function renderBoard() {
+      boardElem.innerHTML = "";
+      for (let r = 0; r < 3; r++) {
+        const row = boardElem.insertRow();
+        for (let c = 0; c < 3; c++) {
+          const idx = r * 3 + c;
+          const cell = row.insertCell();
+          cell.textContent = board[idx];
+          cell.onclick = () => playerMove(idx);
+        }
+      }
+    }
+
+    function playerMove(idx) {
+      if (board[idx] !== "") return;
+      board[idx] = "X";
+      if (checkWin("X")) {
+        statusElem.textContent = "You Win!";
+        renderBoard(); return;
+      }
+      if (!board.includes("")) {
+        statusElem.textContent = "Draw!"; return;
+      }
+      aiMove();
+    }
+
+    function aiMove() {
+      let best = -1;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+          board[i] = "O";
+          if (checkWin("O")) {
+            renderBoard();
+            statusElem.textContent = "Bot Wins!";
+            return;
+          }
+          board[i] = "";
+        }
+      }
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === "") { best = i; break; }
+      }
+      if (best >= 0) board[best] = "O";
+      if (checkWin("O")) {
+        statusElem.textContent = "Bot Wins!";
+      } else if (!board.includes("")) {
+        statusElem.textContent = "Draw!";
+      }
+      renderBoard();
+    }
+
+    function checkWin(p) {
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      return wins.some(comb => comb.every(i => board[i] === p));
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
